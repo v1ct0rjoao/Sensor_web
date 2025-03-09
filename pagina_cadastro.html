@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="css\cadastro.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
+        rel="stylesheet">
+    <title>Cadastro</title>
+</head>
+
+<body>
+
+    <img id="fundo" src="img\fundo.jpg" alt="Foto de fundo">
+
+    <div class="container_c">
+        <div class="cadastro">
+            <h1>CADASTRO</h1>
+
+            <div class="formulario_c">
+                <form>
+                    <h3>Nome</h3>
+                    <input type="text" placeholder="Digite seu nome">
+
+                    <h3>Matrícula</h3>
+                    <input type="text" placeholder="Digite sua matrícula">
+
+                    <h3>Senha</h3>
+                    <input type="password" placeholder="Digite sua senha">
+
+                    <button type="button" id="botao_de_cadastrar" onclick="cadastrar()">CADASTRAR</button>
+
+
+                </form>
+
+                <h3 id="login">Já tem uma conta? <a href="pagina_login.html">Faça login</a></h3>
+
+            </div>
+
+        </div>
+
+    </div>
+    <script>
+
+        // Adicionar validação antes de enviar a requisição
+        async function cadastrar() {
+            const name = document.querySelector("input[placeholder='Digite seu nome']").value;
+            const matricula = document.querySelector("input[placeholder='Digite sua matrícula']").value;
+            const senha = document.querySelector("input[placeholder='Digite sua senha']").value;
+
+            if (!name || !matricula || !senha) {
+                alert("Por favor, preencha todos os campos.");
+                return;
+            }
+
+            // Exibir spinner ou mensagem de carregamento
+            document.getElementById("botao_de_cadastrar").disabled = true;
+            document.getElementById("botao_de_cadastrar").textContent = "Carregando...";
+
+            try {
+                const response = await fetch("http://localhost:3000/register", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ name, matricula, senha }),
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    alert("Cadastro realizado com sucesso!");
+                    window.location.href = "pagina_login.html";
+                } else {
+                    alert(data.error || "Erro ao cadastrar. Tente novamente.");
+                }
+            } catch (error) {
+                alert("Erro ao cadastrar. Tente novamente.");
+            } finally {
+                // Restaurar o botão
+                document.getElementById("botao_de_cadastrar").disabled = false;
+                document.getElementById("botao_de_cadastrar").textContent = "CADASTRAR";
+            }
+        }
+
+
+    </script>
+
+</body>
+
+</html>
