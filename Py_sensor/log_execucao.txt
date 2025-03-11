@@ -24,3 +24,16 @@
 2025-03-08 21:02:04 - Iniciando coleta: Py_sensor\ventilador\repouso.csv
 2025-03-08 21:06:34 - Coleta finalizada: Py_sensor\ventilador\repouso.csv
 2025-03-08 21:06:46 - Programa encerrado pelo usuário.
+2025-03-11 13:15:20 - Iniciando coleta: Py_sensor\ventilador\repouso.csv
+2025-03-11 13:20:34 - Coleta finalizada: Py_sensor\ventilador\repouso.csv
+2025-03-11 13:25:36 - Iniciando coleta: Py_sensor\ventilador\velocidade 3.csv
+2025-03-11 13:25:59 - Coleta interrompida pelo usuário.
+2025-03-11 13:26:21 - Iniciando coleta: Py_sensor\ventilador\velocidade 3.csv
+2025-03-11 13:27:27 - Iniciando coleta: Py_sensor\ventilador\velocidade 3.csv
+2025-03-11 13:29:58 - Iniciando coleta: Py_sensor\ventilador\velocidade 3.csv
+2025-03-11 13:37:19 - Coleta finalizada: Py_sensor\ventilador\velocidade 3.csv
+2025-03-11 13:42:27 - Iniciando coleta: Py_sensor\ventilador\velocidade 2.csv
+2025-03-11 13:49:34 - Coleta finalizada: Py_sensor\ventilador\velocidade 2.csv
+2025-03-11 13:50:25 - Iniciando coleta: Py_sensor\ventilador\velocidade 1.csv
+2025-03-11 13:56:42 - Coleta finalizada: Py_sensor\ventilador\velocidade 1.csv
+2025-03-11 13:57:16 - Programa encerrado pelo usuário.

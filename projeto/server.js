@@ -1,7 +1,7 @@
 const express = require("express");
 const cors = require("cors");
 const bcrypt = require("bcrypt");
-const WebSocket = require("ws"); // Para suporte a WebSocket
+const WebSocket = require("ws"); 
 const fs = require("fs"); // Para ler o arquivo TXT
 const path = require("path"); // Para manipular caminhos de arquivos
 
@@ -34,20 +34,16 @@ function notificarMudancaEstado(codigo, estado) {
     });
 }
 
-// Middleware para verificar o token de autenticação
-function authenticateToken(req, res, next) {
-    const token = req.headers["authorization"];
-    if (!token) return res.status(401).json({ error: "Token de autenticação não fornecido." });
 
-    // Verificar o token (simulado)
-    if (token !== "Bearer token_simulado") {
-        return res.status(403).json({ error: "Token inválido." });
-    }
+app.get("/users", (req, res) => {
+    const usersWithoutPassword = users.map(user => {
+        const { senha, ...userWithoutPassword } = user;
+        return userWithoutPassword;
+    });
+    res.json(usersWithoutPassword);
+});
 
-    next();
-}
-
-// Rotas públicas
+// Rota para registrar um novo usuário
 app.post("/register", async (req, res) => {
     const { name, matricula, senha } = req.body;
 
@@ -67,6 +63,7 @@ app.post("/register", async (req, res) => {
     res.status(201).json({ message: "Usuário cadastrado com sucesso!" });
 });
 
+// Rota para login
 app.post("/login", async (req, res) => {
     const { matricula, senha } = req.body;
 
@@ -83,12 +80,12 @@ app.post("/login", async (req, res) => {
     res.json({ message: "Login bem-sucedido!", user: { name: user.name } });
 });
 
-// Rotas protegidas
-app.get("/items", authenticateToken, (req, res) => {
+
+app.get("/items", (req, res) => {
     res.json(items);
 });
 
-app.post("/items", authenticateToken, (req, res) => {
+app.post("/items", (req, res) => {
     const { nome, codigo, setor, fabricante, serie, data, potencia } = req.body;
 
     if (!nome || !codigo || !setor || !fabricante || !serie || !data || !potencia) {
@@ -111,7 +108,7 @@ app.post("/items", authenticateToken, (req, res) => {
     res.status(201).json(newItem);
 });
 
-app.delete("/items/:id", authenticateToken, (req, res) => {
+app.delete("/items/:id", (req, res) => {
     const { id } = req.params;
     items = items.filter((i) => i.id != id);
     res.json({ message: "Item removido com sucesso" });

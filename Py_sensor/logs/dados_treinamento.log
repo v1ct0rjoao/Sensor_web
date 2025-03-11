@@ -1,147 +1,30 @@
-2025-03-08 20:19:45,458 - Arquivo repouso.csv carregado com condição repouso.
-2025-03-08 20:19:45,477 - Arquivo velocidade 1.csv carregado com condição velocidade 1.
-2025-03-08 20:19:45,482 - Arquivo velocidade 2.csv carregado com condição velocidade 2.
-2025-03-08 20:19:45,486 - Arquivo velocidade 3.csv carregado com condição velocidade 3.
-2025-03-08 20:19:45,486 - Total de amostras carregadas: 19984
-2025-03-08 20:19:45,566 - Total de janelas de 100 amostras: 200
-2025-03-08 20:19:45,566 - Tamanho do conjunto de treino: 140
-2025-03-08 20:19:45,566 - Tamanho do conjunto de teste: 60
-2025-03-08 20:20:38,103 - Melhores hiperparâmetros: {'max_depth': 10, 'min_samples_split': 2, 'n_estimators': 200}
-2025-03-08 20:20:38,121 - Acurácia: 0.9666666666666667
-2025-03-08 20:20:38,124 - Relatório de Classificação:
+2025-03-11 13:57:25,063 - Iniciando o processo de treinamento.
+2025-03-11 13:57:38,806 - Arquivo repouso.csv carregado com condição repouso.
+2025-03-11 13:57:38,808 - Arquivo velocidade 1.csv carregado com condição velocidade 1.
+2025-03-11 13:57:38,812 - Arquivo velocidade 2.csv carregado com condição velocidade 2.
+2025-03-11 13:57:38,815 - Arquivo velocidade 3.csv carregado com condição velocidade 3.
+2025-03-11 13:57:38,815 - Total de amostras carregadas: 19982
+2025-03-11 13:57:38,925 - Total de janelas de 100 amostras: 200
+2025-03-11 13:57:38,927 - Tamanho do conjunto de treino: 140
+2025-03-11 13:57:38,928 - Tamanho do conjunto de teste: 60
+2025-03-11 13:59:06,536 - Melhores hiperparâmetros: {'max_depth': 10, 'min_samples_split': 10, 'n_estimators': 200}
+2025-03-11 13:59:06,564 - Acurácia: 0.8333333333333334
+2025-03-11 13:59:06,574 - Relatório de Classificação:
               precision    recall  f1-score   support
 
-     repouso       1.00      1.00      1.00        11
-velocidade 1       0.95      1.00      0.98        20
-velocidade 2       1.00      0.87      0.93        15
-velocidade 3       0.93      1.00      0.97        14
+     repouso       0.85      1.00      0.92        11
+velocidade 1       1.00      0.95      0.97        20
+velocidade 2       0.71      0.80      0.75        15
+velocidade 3       0.73      0.57      0.64        14
 
-    accuracy                           0.97        60
-   macro avg       0.97      0.97      0.97        60
-weighted avg       0.97      0.97      0.97        60
+    accuracy                           0.83        60
+   macro avg       0.82      0.83      0.82        60
+weighted avg       0.83      0.83      0.83        60
 
-2025-03-08 20:20:38,124 - Matriz de Confusão:
+2025-03-11 13:59:06,578 - Matriz de Confusão:
 [[11  0  0  0]
- [ 0 20  0  0]
- [ 0  1 13  1]
- [ 0  0  0 14]]
-2025-03-08 20:20:38,204 - Modelo e scaler salvos na pasta 'C:\Users\joaov\Documents\Programação\Projeto_Piec\Py_sensor\modelos'.
-2025-03-08 20:20:38,214 - Métricas e hiperparâmetros salvos na pasta 'C:\Users\joaov\Documents\Programação\Projeto_Piec\Py_sensor\modelos'.
-2025-03-08 20:39:59,644 - Arquivo repouso.csv carregado com condição repouso.
-2025-03-08 20:39:59,644 - Arquivo velocidade 1.csv carregado com condição velocidade 1.
-2025-03-08 20:39:59,644 - Arquivo velocidade 2.csv carregado com condição velocidade 2.
-2025-03-08 20:39:59,659 - Arquivo velocidade 3.csv carregado com condição velocidade 3.
-2025-03-08 20:39:59,659 - Total de amostras carregadas: 19984
-2025-03-08 20:39:59,738 - Total de janelas de 100 amostras: 200
-2025-03-08 20:39:59,753 - Tamanho do conjunto de treino: 140
-2025-03-08 20:39:59,753 - Tamanho do conjunto de teste: 60
-2025-03-08 20:40:50,820 - Melhores hiperparâmetros: {'max_depth': 10, 'min_samples_split': 2, 'n_estimators': 200}
-2025-03-08 20:40:50,820 - Acurácia: 0.9666666666666667
-2025-03-08 20:40:50,836 - Relatório de Classificação:
-              precision    recall  f1-score   support
-
-     repouso       1.00      1.00      1.00        11
-velocidade 1       0.95      1.00      0.98        20
-velocidade 2       1.00      0.87      0.93        15
-velocidade 3       0.93      1.00      0.97        14
-
-    accuracy                           0.97        60
-   macro avg       0.97      0.97      0.97        60
-weighted avg       0.97      0.97      0.97        60
-
-2025-03-08 20:40:50,836 - Matriz de Confusão:
-[[11  0  0  0]
- [ 0 20  0  0]
- [ 0  1 13  1]
- [ 0  0  0 14]]
-2025-03-08 20:40:50,883 - Modelo e scaler salvos na pasta 'C:\Users\joaov\Documents\Programação\Projeto_Piec\Py_sensor\modelos'.
-2025-03-08 20:40:50,899 - Métricas e hiperparâmetros salvos na pasta 'C:\Users\joaov\Documents\Programação\Projeto_Piec\Py_sensor\modelos'.
-2025-03-08 21:07:01,716 - Arquivo repouso.csv carregado com condição repouso.
-2025-03-08 21:07:01,718 - Arquivo velociade 1.csv carregado com condição velociade 1.
-2025-03-08 21:07:01,720 - Arquivo velocidade 2.csv carregado com condição velocidade 2.
-2025-03-08 21:07:01,722 - Arquivo velocidade 3.csv carregado com condição velocidade 3.
-2025-03-08 21:07:01,722 - Total de amostras carregadas: 19984
-2025-03-08 21:07:01,810 - Total de janelas de 100 amostras: 200
-2025-03-08 21:07:01,811 - Tamanho do conjunto de treino: 140
-2025-03-08 21:07:01,811 - Tamanho do conjunto de teste: 60
-2025-03-08 21:07:49,264 - Melhores hiperparâmetros: {'max_depth': 10, 'min_samples_split': 10, 'n_estimators': 200}
-2025-03-08 21:07:49,286 - Acurácia: 0.9333333333333333
-2025-03-08 21:07:49,286 - Relatório de Classificação:
-              precision    recall  f1-score   support
-
-     repouso       1.00      1.00      1.00        11
- velociade 1       1.00      0.85      0.92        20
-velocidade 2       0.82      0.93      0.88        15
-velocidade 3       0.93      1.00      0.97        14
-
-    accuracy                           0.93        60
-   macro avg       0.94      0.95      0.94        60
-weighted avg       0.94      0.93      0.93        60
-
-2025-03-08 21:07:49,286 - Matriz de Confusão:
-[[11  0  0  0]
- [ 0 17  3  0]
- [ 0  0 14  1]
- [ 0  0  0 14]]
-2025-03-08 21:07:49,342 - Modelo e scaler salvos na pasta 'C:\Users\joaov\Documents\Programação\Projeto_Piec\Py_sensor\modelos'.
-2025-03-08 21:07:49,342 - Métricas e hiperparâmetros salvos na pasta 'C:\Users\joaov\Documents\Programação\Projeto_Piec\Py_sensor\modelos'.
-2025-03-08 21:27:11,677 - Iniciando o processo de treinamento.
-2025-03-08 21:30:05,610 - Arquivo repouso.csv carregado com condição repouso.
-2025-03-08 21:30:05,610 - Arquivo velociade 1.csv carregado com condição velociade 1.
-2025-03-08 21:30:05,610 - Arquivo velocidade 2.csv carregado com condição velocidade 2.
-2025-03-08 21:30:05,610 - Arquivo velocidade 3.csv carregado com condição velocidade 3.
-2025-03-08 21:30:05,610 - Total de amostras carregadas: 19984
-2025-03-08 21:30:05,704 - Total de janelas de 100 amostras: 200
-2025-03-08 21:30:05,704 - Tamanho do conjunto de treino: 140
-2025-03-08 21:30:05,704 - Tamanho do conjunto de teste: 60
-2025-03-08 21:31:08,926 - Melhores hiperparâmetros: {'max_depth': 10, 'min_samples_split': 10, 'n_estimators': 200}
-2025-03-08 21:31:08,948 - Acurácia: 0.9333333333333333
-2025-03-08 21:31:08,955 - Relatório de Classificação:
-              precision    recall  f1-score   support
-
-     repouso       1.00      1.00      1.00        11
- velociade 1       1.00      0.85      0.92        20
-velocidade 2       0.82      0.93      0.88        15
-velocidade 3       0.93      1.00      0.97        14
-
-    accuracy                           0.93        60
-   macro avg       0.94      0.95      0.94        60
-weighted avg       0.94      0.93      0.93        60
-
-2025-03-08 21:31:08,956 - Matriz de Confusão:
-[[11  0  0  0]
- [ 0 17  3  0]
- [ 0  0 14  1]
- [ 0  0  0 14]]
-2025-03-08 21:31:09,052 - Modelo, scaler e label_encoder salvos na pasta 'C:\Users\joaov\Documents\Programação\Projeto_Piec\Py_sensor\modelos'.
-2025-03-08 21:31:09,064 - Métricas e hiperparâmetros salvos na pasta 'C:\Users\joaov\Documents\Programação\Projeto_Piec\Py_sensor\modelos'.
-2025-03-08 21:44:31,895 - Iniciando o processo de treinamento.
-2025-03-08 21:44:33,483 - Arquivo repouso.csv carregado com condição repouso.
-2025-03-08 21:44:33,487 - Arquivo velociade 1.csv carregado com condição velociade 1.
-2025-03-08 21:44:33,490 - Arquivo velocidade 2.csv carregado com condição velocidade 2.
-2025-03-08 21:44:33,494 - Arquivo velocidade 3.csv carregado com condição velocidade 3.
-2025-03-08 21:44:33,494 - Total de amostras carregadas: 19984
-2025-03-08 21:44:33,587 - Total de janelas de 100 amostras: 200
-2025-03-08 21:44:33,587 - Tamanho do conjunto de treino: 140
-2025-03-08 21:44:33,588 - Tamanho do conjunto de teste: 60
-2025-03-08 21:45:30,405 - Melhores hiperparâmetros: {'max_depth': 10, 'min_samples_split': 10, 'n_estimators': 200}
-2025-03-08 21:45:30,418 - Acurácia: 0.9333333333333333
-2025-03-08 21:45:30,424 - Relatório de Classificação:
-              precision    recall  f1-score   support
-
-     repouso       1.00      1.00      1.00        11
- velociade 1       1.00      0.85      0.92        20
-velocidade 2       0.82      0.93      0.88        15
-velocidade 3       0.93      1.00      0.97        14
-
-    accuracy                           0.93        60
-   macro avg       0.94      0.95      0.94        60
-weighted avg       0.94      0.93      0.93        60
-
-2025-03-08 21:45:30,425 - Matriz de Confusão:
-[[11  0  0  0]
- [ 0 17  3  0]
- [ 0  0 14  1]
- [ 0  0  0 14]]
-2025-03-08 21:45:30,493 - Modelo, scaler e label_encoder salvos na pasta 'C:\Users\joaov\Documents\Programação\Projeto_Piec\Py_sensor\modelos'.
-2025-03-08 21:45:30,499 - Métricas e hiperparâmetros salvos na pasta 'C:\Users\joaov\Documents\Programação\Projeto_Piec\Py_sensor\modelos'.
+ [ 0 19  1  0]
+ [ 0  0 12  3]
+ [ 2  0  4  8]]
+2025-03-11 13:59:06,709 - Modelo, scaler e label_encoder salvos na pasta 'C:\Users\joaov\Documents\Programação\Projeto_Piec\Py_sensor\modelos'.
+2025-03-11 13:59:06,739 - Métricas e hiperparâmetros salvos na pasta 'C:\Users\joaov\Documents\Programação\Projeto_Piec\Py_sensor\modelos'.
