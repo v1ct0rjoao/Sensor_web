@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="css/visualizar_agendamentos.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
+        rel="stylesheet">
+    <title>Visualizar Agendamentos</title>
+</head>
+
+<body>
+    <header>
+        <div class="deslogar" id="voltarParaIndex">
+            <h3>Voltar</h3>
+            <img src="img/voltar.png" alt="voltar">
+        </div>
+    </header>
+
+    <main>
+        <div class="container">
+            <h1>Agendamentos</h1>
+            <div class="agendamentos-container" id="agendamentosContainer">
+                <!-- Agendamentos serão preenchidos aqui -->
+            </div>
+        </div>
+    </main>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script>
+        // Redireciona para index.html ao clicar na div
+        document.getElementById("voltarParaIndex").addEventListener("click", function () {
+            window.location.href = "index.html";
+        });
+
+        // Função para gerar PDF de um agendamento específico
+        function gerarPDF(agendamento) {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+
+            // Adiciona os detalhes do agendamento ao PDF
+            doc.text(`Máquina: ${agendamento.maquinaNome} (${agendamento.maquinaCodigo})`, 10, 10);
+            doc.text(`Data: ${agendamento.data}`, 10, 20);
+            doc.text(`Descrição: ${agendamento.descricao}`, 10, 30);
+            doc.text(`Usuário: ${agendamento.usuario.name} (${agendamento.usuario.matricula})`, 10, 40);
+
+            // Salva o PDF com o nome da máquina
+            doc.save(`Agendamento_${agendamento.maquinaNome}.pdf`);
+        }
+
+        // Função para remover um agendamento
+        async function removerAgendamento(id) {
+            try {
+                const response = await fetch(`http://localhost:3000/agendamentos/${id}`, {
+                    method: "DELETE",
+                    headers: {
+                        "Authorization": `Bearer ${localStorage.getItem("token")}`,
+                    },
+                });
+
+                if (!response.ok) {
+                    throw new Error("Erro ao remover o agendamento.");
+                }
+
+                // Recarrega a lista de agendamentos após a remoção
+                carregarAgendamentos();
+            } catch (error) {
+                console.error("Erro ao remover agendamento:", error);
+                alert("Erro ao remover agendamento. Tente novamente.");
+            }
+        }
+
+        // Função para carregar agendamentos
+        async function carregarAgendamentos() {
+            try {
+                const response = await fetch("http://localhost:3000/agendamentos", {
+                    headers: {
+                        "Authorization": `Bearer ${localStorage.getItem("token")}`,
+                    },
+                });
+
+                if (!response.ok) {
+                    throw new Error("Erro ao carregar agendamentos.");
+                }
+
+                const agendamentos = await response.json();
+                const container = document.getElementById("agendamentosContainer");
+                container.innerHTML = ""; // Limpa o conteúdo antes de carregar
+
+                agendamentos.forEach((agendamento) => {
+                    const agendamentoItem = document.createElement("div");
+                    agendamentoItem.classList.add("agendamento-item");
+
+                    // Conteúdo do agendamento
+                    agendamentoItem.innerHTML = `
+                        <p><strong>Máquina:</strong> ${agendamento.maquinaNome} (${agendamento.maquinaCodigo})</p>
+                        <p><strong>Data:</strong> ${agendamento.data}</p>
+                        <p><strong>Descrição:</strong> ${agendamento.descricao}</p>
+                        <button class="gerar-pdf-btn" onclick="gerarPDF(${JSON.stringify(agendamento).replace(/"/g, '&quot;')})">Gerar PDF</button>
+                        <button class="remover-btn" onclick="removerAgendamento('${agendamento._id}')">🗑️ Remover</button>
+                    `;
+
+                    container.appendChild(agendamentoItem);
+                });
+            } catch (error) {
+                console.error("Erro ao carregar agendamentos:", error);
+                alert("Erro ao carregar agendamentos. Tente novamente.");
+            }
+        }
+
+        // Carregar agendamentos ao abrir a página
+        document.addEventListener("DOMContentLoaded", carregarAgendamentos);
+    </script>
+</body>
+
+</html>

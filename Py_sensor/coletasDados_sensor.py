@@ -56,7 +56,7 @@ def registrar_log(mensagem):
     """
     Salva eventos importantes em um arquivo de log na pasta Py_sensor.
     """
-    log_path = os.path.join("Py_sensor", "log_execucao.txt")
+    log_path = os.path.join(os.path.dirname(__file__), "log_execucao.txt")
     with open(log_path, "a") as log:
         log.write(f"{time.strftime('%Y-%m-%d %H:%M:%S')} - {mensagem}\n")
 
@@ -74,8 +74,8 @@ def coletar_dados(diretorio, nome_arquivo, num_amostras):
     """
     Coleta os dados da porta serial e salva em um arquivo CSV dentro do diretório escolhido.
     """
-    caminho_completo = os.path.join(diretorio, nome_arquivo + ".csv")
-    os.makedirs(diretorio, exist_ok=True)  # Cria o diretório se não existir
+    caminho_completo = os.path.join(os.path.dirname(__file__), diretorio, nome_arquivo + ".csv")
+    os.makedirs(os.path.join(os.path.dirname(__file__), diretorio), exist_ok=True)  # Cria o diretório se não existir
 
     try:
         with open(caminho_completo, mode='w', newline='') as file:
@@ -125,9 +125,9 @@ while True:
 
     if opcao == "1":
         nome_pasta = input("Digite o nome da nova pasta: ")
-        diretorio = os.path.join("Py_sensor", nome_pasta)
+        diretorio = os.path.join(os.path.dirname(__file__), nome_pasta)
     elif opcao == "2":
-        pastas = [p for p in os.listdir("Py_sensor") if os.path.isdir(os.path.join("Py_sensor", p))]
+        pastas = [p for p in os.listdir(os.path.dirname(__file__)) if os.path.isdir(os.path.join(os.path.dirname(__file__), p))]
         if not pastas:
             print("Nenhuma pasta encontrada. Crie uma nova primeiro.")
             continue
@@ -136,12 +136,12 @@ while True:
             print(f"[{i}] {p}")
         escolha = input("Escolha o número da pasta: ")
         try:
-            diretorio = os.path.join("Py_sensor", pastas[int(escolha)])
+            diretorio = os.path.join(os.path.dirname(__file__), pastas[int(escolha)])
         except (IndexError, ValueError):
             print("Escolha inválida!")
             continue
     elif opcao == "3":
-        pastas = [p for p in os.listdir("Py_sensor") if os.path.isdir(os.path.join("Py_sensor", p))]
+        pastas = [p for p in os.listdir(os.path.dirname(__file__)) if os.path.isdir(os.path.join(os.path.dirname(__file__), p))]
         if pastas:
             print("Pastas disponíveis:")
             for p in pastas:

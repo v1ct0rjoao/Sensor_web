@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="css\registro_nanutencao.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
+        rel="stylesheet">
+    <title>Registro de Manutenção</title>
+</head>
+
+<body>
+    <header>
+        <div class="deslogar" id="voltarParaIndex">
+            <h3>Voltar</h3>
+            <img src="img/voltar.png" alt="voltar">
+        </div>
+    </header>
+
+    <main>
+        <div class="container">
+            <h1>Registro de Manutenção</h1>
+            <form id="formRegistro">
+                <div class="form-group">
+                    <label for="maquina">Máquina:</label>
+                    <select id="maquina" required>
+                        <option value="">Selecione uma máquina</option>
+                        <!-- Opções serão carregadas dinamicamente -->
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="setor">Setor:</label>
+                    <input type="text" id="setor" readonly>
+                </div>
+                <div class="form-group">
+                    <label for="data">Data:</label>
+                    <input type="date" id="data" required>
+                </div>
+                <div class="form-group">
+                    <label for="status">Status:</label>
+                    <select id="status" required>
+                        <option value="Concluída">Concluída</option>
+                        <option value="Pendente">Pendente</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="tecnico">Técnico Responsável:</label>
+                    <input type="text" id="tecnico" required>
+                </div>
+                <div class="form-group">
+                    <label for="tipo">Tipo de Manutenção:</label>
+                    <select id="tipo" required>
+                        <option value="Preventiva">Preventiva</option>
+                        <option value="Corretiva">Corretiva</option>
+                        <option value="Preditiva">Preditiva</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="horas">Horas de Trabalho:</label>
+                    <input type="number" id="horas" min="0" step="0.5" required>
+                </div>
+                <div class="form-group">
+                    <label for="pecas">Peças Substituídas:</label>
+                    <textarea id="pecas" rows="2"></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="custo">Custo da Manutenção (R$):</label>
+                    <input type="number" id="custo" min="0" step="0.01" required>
+                </div>
+                <div class="form-group">
+                    <label for="descricao">Descrição do Problema:</label>
+                    <textarea id="descricao" rows="4" required></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="observacoes">Observações:</label>
+                    <textarea id="observacoes" rows="2"></textarea>
+                </div>
+                <button type="submit">Registrar</button>
+            </form>
+        </div>
+    </main>
+
+    <script>
+        // Redireciona para index.html ao clicar na div
+        document.getElementById("voltarParaIndex").addEventListener("click", function () {
+            window.location.href = "index.html";
+        });
+
+        // Carrega as máquinas ao abrir a página
+        document.addEventListener("DOMContentLoaded", async function () {
+            try {
+                const response = await fetch("http://localhost:3000/maquinas");
+                if (!response.ok) {
+                    throw new Error("Erro ao carregar máquinas.");
+                }
+
+                const maquinas = await response.json();
+                const selectMaquina = document.getElementById("maquina");
+
+                maquinas.forEach((maquina) => {
+                    const option = document.createElement("option");
+                    option.value = maquina.codigo;
+                    option.textContent = `${maquina.nome} (${maquina.codigo})`;
+                    selectMaquina.appendChild(option);
+                });
+
+                // Atualiza o setor ao selecionar uma máquina
+                selectMaquina.addEventListener("change", function () {
+                    const maquinaSelecionada = maquinas.find(m => m.codigo === this.value);
+                    if (maquinaSelecionada) {
+                        document.getElementById("setor").value = maquinaSelecionada.setor;
+                    } else {
+                        document.getElementById("setor").value = "";
+                    }
+                });
+            } catch (error) {
+                console.error("Erro ao carregar máquinas:", error);
+                alert("Erro ao carregar máquinas. Tente novamente.");
+            }
+        });
+
+        // Envia o formulário de registro
+        document.getElementById("formRegistro").addEventListener("submit", async function (event) {
+            event.preventDefault();
+
+            const maquinaCodigo = document.getElementById("maquina").value;
+            const setor = document.getElementById("setor").value;
+            const data = document.getElementById("data").value;
+            const status = document.getElementById("status").value;
+            const tecnico = document.getElementById("tecnico").value;
+            const tipo = document.getElementById("tipo").value;
+            const horas = document.getElementById("horas").value;
+            const pecas = document.getElementById("pecas").value;
+            const custo = document.getElementById("custo").value;
+            const descricao = document.getElementById("descricao").value;
+            const observacoes = document.getElementById("observacoes").value;
+
+            if (!maquinaCodigo || !data || !status || !tecnico || !tipo || !horas || !custo || !descricao) {
+                alert("Por favor, preencha todos os campos obrigatórios.");
+                return;
+            }
+
+            try {
+                const response = await fetch("http://localhost:3000/registrar-manutencao", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        maquinaCodigo,
+                        setor,
+                        data,
+                        status,
+                        tecnico,
+                        tipo,
+                        horas,
+                        pecas,
+                        custo,
+                        descricao,
+                        observacoes
+                    }),
+                });
+
+                if (!response.ok) {
+                    throw new Error("Erro ao registrar manutenção.");
+                }
+
+                alert("Manutenção registrada com sucesso!");
+                window.location.href = "index.html";
+            } catch (error) {
+                console.error("Erro ao registrar manutenção:", error);
+                alert("Erro ao registrar manutenção. Tente novamente.");
+            }
+        });
+    </script>
+</body>
+
+</html>

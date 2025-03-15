@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="css/historico.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
+        rel="stylesheet">
+    <title>Histórico de Máquinas</title>
+</head>
+
+<body>
+    <header>
+        <div class="deslogar" id="voltarParaIndex">
+            <h3>Voltar</h3>
+            <img src="img/voltar.png" alt="voltar">
+        </div>
+    </header>
+
+    <main>
+        <div class="container">
+            <h1>Histórico de Máquinas</h1>
+            <div class="historico-container" id="historicoContainer">
+                <!-- Aqui serão exibidas as máquinas -->
+                <p>Carregando máquinas...</p>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Função para carregar a lista de máquinas
+        async function carregarMaquinas() {
+            try {
+                const response = await fetch("http://localhost:3000/items");
+                if (!response.ok) {
+                    throw new Error("Erro ao carregar as máquinas.");
+                }
+
+                const maquinas = await response.json();
+                const historicoContainer = document.getElementById("historicoContainer");
+
+                if (maquinas.length === 0) {
+                    historicoContainer.innerHTML = "<p>Nenhuma máquina cadastrada.</p>";
+                    return;
+                }
+
+                // Cria os itens de máquina
+                historicoContainer.innerHTML = maquinas.map((maquina) => `
+                    <a href="historico_maquina.html?codigo=${maquina.codigo}" class="maquina-item">
+                        <p><strong>Máquina:</strong> ${maquina.nome}</p>
+                        <p><strong>Setor:</strong> ${maquina.setor}</p>
+                        <p><strong>Código:</strong> ${maquina.codigo}</p>
+                        <p><strong>Modelo:</strong> ${maquina.fabricante}</p>
+                    </a>
+                `).join("");
+            } catch (error) {
+                console.error("Erro ao carregar as máquinas:", error);
+                document.getElementById("historicoContainer").innerHTML = "<p>Erro ao carregar as máquinas.</p>";
+            }
+        }
+
+        // Carrega as máquinas ao abrir a página
+        document.addEventListener("DOMContentLoaded", carregarMaquinas);
+
+        // Redireciona para index.html ao clicar na div
+        document.getElementById("voltarParaIndex").addEventListener("click", function () {
+            window.location.href = "index.html";
+        });
+    </script>
+</body>
+
+</html>

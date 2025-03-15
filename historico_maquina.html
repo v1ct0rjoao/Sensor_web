@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="css/historico_maquina.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
+        rel="stylesheet">
+    <title>Histórico da Máquina</title>
+</head>
+
+<body>
+    <header>
+       
+        <div class="deslogar" id="voltarParaHistorico">
+            <h3>Voltar</h3>
+            <img src="img/voltar.png" alt="voltar">
+        </div>
+    </header>
+
+    <main>
+        <div class="container">
+            <h1 id="tituloMaquina">Carregando...</h1>
+            <div class="historico-container" id="historicoContainer">
+                <!-- Aqui serão exibidos os estados -->
+                <p>Carregando histórico...</p>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Função para carregar o nome da máquina
+        async function carregarNomeMaquina(codigo) {
+            try {
+                const response = await fetch(`http://localhost:3000/items/${codigo}`);
+                if (!response.ok) {
+                    throw new Error("Erro ao carregar os detalhes da máquina.");
+                }
+
+                const maquina = await response.json();
+                const tituloMaquina = document.getElementById("tituloMaquina");
+                tituloMaquina.textContent = `${maquina.nome} | ${maquina.codigo}`;
+            } catch (error) {
+                console.error("Erro ao carregar o nome da máquina:", error);
+                document.getElementById("tituloMaquina").textContent = "Máquina não encontrada";
+            }
+        }
+
+        // Função para carregar o histórico da máquina
+        async function carregarHistorico() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const codigo = urlParams.get("codigo"); // Obtém o código da máquina da URL
+
+            if (!codigo) {
+                document.getElementById("historicoContainer").innerHTML = "<p>Código da máquina não informado.</p>";
+                return;
+            }
+
+            try {
+                // Carrega o nome da máquina
+                await carregarNomeMaquina(codigo);
+
+                // Carrega o histórico de estados
+                const response = await fetch(`http://localhost:3000/items/${codigo}/historico`);
+                if (!response.ok) {
+                    throw new Error("Erro ao carregar o histórico.");
+                }
+
+                const historico = await response.json();
+                const historicoContainer = document.getElementById("historicoContainer");
+
+                if (historico.length === 0) {
+                    historicoContainer.innerHTML = "<p>Nenhum estado registrado para esta máquina.</p>";
+                    return;
+                }
+
+                // Exibe o histórico
+                historicoContainer.innerHTML = historico.map((estado) => `
+                    <div class="historico-item">
+                        <p><strong>Data:</strong> ${estado.data}</p>
+                        <p><strong>Estado:</strong> ${estado.estado}</p>
+                    </div>
+                `).join("");
+            } catch (error) {
+                console.error("Erro ao carregar o histórico:", error);
+                document.getElementById("historicoContainer").innerHTML = `<p>Erro ao carregar o histórico: ${error.message}</p>`;
+            }
+        }
+
+        // Carrega o histórico ao abrir a página
+        document.addEventListener("DOMContentLoaded", carregarHistorico);
+
+        // Redireciona para a página de histórico ao clicar na div
+        document.getElementById("voltarParaHistorico").addEventListener("click", function () {
+            window.location.href = "historico.html";
+        });
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="css/agendar_manutencao.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
+        rel="stylesheet">
+    <title>Agendar Manutenção</title>
+</head>
+
+<body>
+    <header>
+     
+        <div class="deslogar" id="voltarParaIndex">
+            <h3>Voltar</h3>
+            <img src="img/voltar.png" alt="voltar">
+        </div>
+    </header>
+
+    <main>
+        <div class="container">
+            <h1>Agendar Manutenção</h1>
+            <form id="formAgendar">
+                <div class="form-group">
+                    <label for="maquina">Máquina:</label>
+                    <select id="maquina" required>
+                        <option value="">Selecione uma máquina</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="data">Data:</label>
+                    <input type="date" id="data" required>
+                </div>
+                <div class="form-group">
+                    <label for="descricao">Descrição:</label>
+                    <textarea id="descricao" rows="4" required></textarea>
+                </div>
+                <button type="submit">Agendar</button>
+            </form>
+        </div>
+    </main>
+
+    <script>
+        // Redireciona para index.html ao clicar na div
+        document.getElementById("voltarParaIndex").addEventListener("click", function () {
+            window.location.href = "index.html";
+        });
+
+        // Função para carregar as máquinas
+        async function carregarMaquinas() {
+            try {
+                const response = await fetch("http://localhost:3000/maquinas");
+                if (!response.ok) {
+                    throw new Error("Erro ao carregar máquinas.");
+                }
+
+                const maquinas = await response.json();
+                const selectMaquina = document.getElementById("maquina");
+
+                maquinas.forEach((maquina) => {
+                    const option = document.createElement("option");
+                    option.value = maquina.codigo;
+                    option.textContent = `${maquina.nome} (${maquina.codigo})`;
+                    selectMaquina.appendChild(option);
+                });
+            } catch (error) {
+                console.error("Erro ao carregar máquinas:", error);
+                alert("Erro ao carregar máquinas. Tente novamente.");
+            }
+        }
+
+        document.getElementById("formAgendar").addEventListener("submit", async function (event) {
+            event.preventDefault();
+        
+            const maquinaCodigo = document.getElementById("maquina").value;
+            const data = document.getElementById("data").value;
+            const descricao = document.getElementById("descricao").value;
+        
+            if (!maquinaCodigo || !data || !descricao) {
+                alert("Por favor, preencha todos os campos.");
+                return;
+            }
+        
+            try {
+                const response = await fetch("http://localhost:3000/agendar", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ maquinaCodigo, data, descricao }),
+                });
+        
+                if (!response.ok) {
+                    throw new Error("Erro ao agendar manutenção.");
+                }
+        
+                alert("Manutenção agendada com sucesso!");
+                window.location.href = "index.html";
+            } catch (error) {
+                console.error("Erro ao agendar manutenção:", error);
+                alert("Erro ao agendar manutenção. Tente novamente.");
+            }
+        });
+        // Carregar as máquinas ao abrir a página
+        document.addEventListener("DOMContentLoaded", carregarMaquinas);
+    </script>
+</body>
+
+</html>

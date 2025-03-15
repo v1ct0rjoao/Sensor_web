@@ -11,7 +11,7 @@ import logging
 import json
 
 # 1. Configuração de logs
-log_dir = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'logs')
+log_dir = os.path.join(os.path.dirname(__file__), 'logs')
 os.makedirs(log_dir, exist_ok=True)
 
 log_file_dados = os.path.join(log_dir, 'dados_treinamento.log')
@@ -46,7 +46,7 @@ def listar_pastas(diretorio):
         return listar_pastas(diretorio)
 
 # 3. Selecionar diretório
-diretorio = 'C:/Users/joaov/Documents/Programação/Projeto_Piec/Py_sensor'  # Diretório onde estão as subpastas
+diretorio = os.path.dirname(__file__)  # Usa o diretório onde o script está localizado
 pasta_selecionada = listar_pastas(diretorio)
 if not pasta_selecionada:
     exit()  # Se o usuário escolher "Sair" ou não selecionar uma pasta válida

@@ -16,31 +16,14 @@
   header {
     display: flex;
     justify-content: space-between;
+    align-items: center;
     height: 50px;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
     background-color: #F5F5F5;
+    padding: 0 20px;
     position: relative;
     z-index: 2;
-  }
-  
-  .funcionario {
-    display: flex;
-    align-items: center;
-  }
-  
-  .funcionario img {
-    width: 3rem;
-    height: 3rem;
-    padding: 0.3rem;
-  }
-  
-  .funcionario h3 {
-    font-size: 0.8rem;
-    font-family: "Poppins", serif;
-    font-weight: 500;
-    font-style: normal;
-    color: #02418A;
-  }
+}
   
   .deslogar {
     display: flex;
@@ -62,8 +45,10 @@
     font-style: normal;
     color: #02418A;
     margin-right: 0.5rem;
+    cursor: pointer;
   }
   
+
   .titulo-form {
     font-size: 3rem;
     color: #02418A;

@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="css/detalhamento_maquina.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
+        rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script> <!-- Adiciona Chart.js -->
+    <title>Detalhamento de Máquina</title>
+</head>
+
+<body>
+    <header>
+        <div class="deslogar" id="voltarParaIndex">
+            <h3>Voltar</h3>
+            <img src="img/voltar.png" alt="voltar">
+        </div>
+    </header>
+
+    <main>
+        <div class="container">
+            <h1>Detalhes da Máquina</h1>
+            <div class="detalhes-container" id="detalhesMaquina">
+                <!-- Os detalhes da máquina serão preenchidos aqui -->
+            </div>
+            <div class="grafico-container">
+                <canvas id="vibracaoChart"></canvas> <!-- Canvas para o gráfico -->
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Função para buscar os detalhes da máquina
+        async function carregarDetalhesMaquina() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const codigo = urlParams.get("codigo"); // Pega o código da máquina da URL
+
+            if (!codigo) {
+                alert("Código da máquina não encontrado.");
+                return;
+            }
+
+            try {
+                const response = await fetch(`http://localhost:3000/items/${codigo}`);
+                if (!response.ok) {
+                    throw new Error("Erro ao buscar detalhes da máquina.");
+                }
+
+                const maquina = await response.json();
+
+                // Preenche os detalhes na página
+                const detalhesContainer = document.getElementById("detalhesMaquina");
+                detalhesContainer.innerHTML = `
+                    <p><strong>Nome:</strong> ${maquina.nome}</p>
+                    <p><strong>Código:</strong> ${maquina.codigo}</p>
+                    <p><strong>Setor:</strong> ${maquina.setor}</p>
+                    <p><strong>Fabricante:</strong> ${maquina.fabricante}</p>
+                    <p><strong>Número de Série:</strong> ${maquina.serie}</p>
+                    <p><strong>Data de Instalação:</strong> ${maquina.data}</p>
+                    <p><strong>Potência:</strong> ${maquina.potencia}</p>
+                    <p><strong>Estado:</strong> ${maquina.estado}</p>
+                `;
+            } catch (error) {
+                console.error("Erro ao carregar detalhes da máquina:", error);
+                alert("Erro ao carregar detalhes da máquina. Tente novamente.");
+            }
+        }
+
+        // Função para inicializar o gráfico de vibrações
+        function inicializarGrafico() {
+            const ctx = document.getElementById('vibracaoChart').getContext('2d');
+            const chart = new Chart(ctx, {
+                type: 'line', // Tipo de gráfico (linha)
+                data: {
+                    labels: [], // Rótulos do eixo X (tempo)
+                    datasets: [{
+                        label: 'Vibração',
+                        data: [], // Dados das vibrações
+                        borderColor: '#02418A', // Cor da linha
+                        borderWidth: 2,
+                        fill: false
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        x: {
+                            display: true,
+                            title: {
+                                display: true,
+                                text: 'Tempo'
+                            }
+                        },
+                        y: {
+                            display: true,
+                            title: {
+                                display: true,
+                                text: 'Intensidade da Vibração'
+                            }
+                        }
+                    }
+                }
+            });
+
+            // Simulação de dados em tempo real (substitua por dados reais)
+            setInterval(() => {
+                const novoDado = Math.random() * 100; // Dado aleatório para teste
+                chart.data.labels.push(new Date().toLocaleTimeString()); // Adiciona o tempo atual
+                chart.data.datasets[0].data.push(novoDado); // Adiciona o novo dado
+
+                // Mantém apenas os últimos 20 dados no gráfico
+                if (chart.data.labels.length > 20) {
+                    chart.data.labels.shift();
+                    chart.data.datasets[0].data.shift();
+                }
+
+                chart.update(); // Atualiza o gráfico
+            }, 1000); // Atualiza a cada 1 segundo
+        }
+
+        // Redireciona para index.html ao clicar na div
+        document.getElementById("voltarParaIndex").addEventListener("click", function () {
+            window.location.href = "index.html";
+        });
+
+        // Carregar os detalhes da máquina e inicializar o gráfico ao abrir a página
+        document.addEventListener("DOMContentLoaded", () => {
+            carregarDetalhesMaquina();
+            inicializarGrafico();
+        });
+    </script>
+</body>
+
+</html>

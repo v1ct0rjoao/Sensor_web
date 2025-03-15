@@ -1,0 +1,81 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html,
+body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+}
+
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: 50px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    background-color: #F5F5F5;
+    padding: 0 20px;
+    position: relative;
+    z-index: 2;
+}
+.deslogar {
+    display: flex;
+    align-items: center;
+  }
+  
+  .deslogar img {
+    width: 2rem;
+    height: 2rem;
+    padding: 0.2rem;
+    margin-right: 0.5rem;
+    cursor: pointer;
+  }
+  
+  .deslogar h3 {
+    font-size: 0.8rem;
+    font-family: "Poppins", serif;
+    font-weight: 500;
+    font-style: normal;
+    color: #02418A;
+    margin-right: 0.5rem;
+    cursor: pointer;
+  }
+  
+.container {
+    padding: 20px;
+    margin-top: 20px;
+}
+
+h1 {
+    font-size: 2rem;
+    font-family: "Poppins", sans-serif;
+    font-weight: 700;
+    color: #02418A;
+    margin-bottom: 20px;
+}
+
+.historico-container {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.historico-item {
+    background-color: white;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    font-family: "Poppins", sans-serif;
+    color: #02418A;
+}
+
+.historico-item p {
+    margin: 5px 0;
+}
+

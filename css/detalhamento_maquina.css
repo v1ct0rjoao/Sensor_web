@@ -1,0 +1,106 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html,
+body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto; /* Permite scroll */
+    font-family: 'Poppins', sans-serif;
+    background-color: #f4f4f4;
+    
+/* Personaliza a barra de scroll */
+body::-webkit-scrollbar {
+    width: 8px; /* Largura da barra de scroll */
+}
+
+body::-webkit-scrollbar-thumb {
+    background-color: rgba(2, 65, 138, 0.5); /* Cor do "ponteiro" da barra de scroll */
+    border-radius: 4px; /* Bordas arredondadas */
+}
+
+body::-webkit-scrollbar-track {
+    background-color: transparent; /* Fundo transparente */
+}
+
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: 50px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    background-color: #F5F5F5;
+    padding: 0 20px;
+    position: relative;
+    z-index: 2;
+}
+
+.deslogar {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+}
+
+.deslogar img {
+    width: 2rem;
+    height: 2rem;
+    padding: 0.2rem;
+    margin-right: 0.5rem;
+}
+
+.deslogar h3 {
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: #02418A;
+}
+
+.container {
+    padding: 20px;
+    margin-top: 20px;
+    max-width: 800px;
+    margin-left: auto;
+    margin-right: auto;
+    height: calc(100vh - 90px); /* Altura máxima menos o header */
+
+}
+
+}
+
+h1 {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #02418A;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.detalhes-container {
+    background-color: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+}
+
+.detalhes-container p {
+    margin: 10px 0;
+    font-size: 1rem;
+    color: #333;
+}
+
+.detalhes-container p strong {
+    color: #02418A;
+}
+
+.grafico-container {
+    background-color: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+}

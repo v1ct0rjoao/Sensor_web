@@ -23,7 +23,7 @@
         </div>
 
         <div class="deslogar">
-            <h3 >Sair</h3>
+            <h3>Sair</h3>
             <img src="img\sair.png" alt="sair">
         </div>
     </header>
@@ -31,29 +31,35 @@
     <main>
         <div class="geral">
             <div class="container_op">
-
                 <div class="opcao">
                     <div id="dados">
                         <h3>Setor</h3>
                         <h3>Nome do Usuário</h3>
                     </div>
                     <div class="info-container">
-                        <div class="info-item">
+                        <!-- Link para a página de Histórico -->
+                        <a href="historico.html" class="info-item">
                             <img src="img/historico.png" alt="Histórico">
                             <h3>Histórico</h3>
-                        </div>
-                        <div class="info-item">
-                            <img src="img/detalhamento.png" alt="Detalhamento de Máquina">
-                            <h3>Detalhamento de Máquina</h3>
-                        </div>
-                        <div class="info-item">
+                        </a>
+
+                        <!-- Link para a página de Agendar Manutenção -->
+                        <a href="agendar_manutencao.html" class="info-item">
                             <img src="img/agenda.png" alt="Agendar Manutenção">
                             <h3>Agendar Manutenção</h3>
-                        </div>
-                        <div class="info-item">
+                        </a>
+
+                        <!-- Link para a página de Visualizar Agendamentos -->
+                        <a href="visualizar_agendamento.html" class="info-item">
+                            <img src="img/documentacao.png" alt="Visualizar Agendamentos">
+                            <h3>Visualizar Agendamentos</h3>
+                        </a>
+
+                        <!-- Link para a página de Registro de Manutenção -->
+                        <a href="registro_manutencao.html" class="info-item">
                             <img src="img/documentacao.png" alt="Registro de Manutenção">
                             <h3>Registro de Manutenção</h3>
-                        </div>
+                        </a>
                     </div>
                 </div>
             </div>
@@ -76,131 +82,129 @@
                     </div>
                 </div>
             </div>
-
         </div>
-
-
-
     </main>
-</body>
 
-</html>
+    <script>
+        // Verificar se o usuário está logado
+        const token = localStorage.getItem("token");
 
-
-<script>
-    // Verificar se o usuário está logado
-    const token = localStorage.getItem("token");
-
-    if (!token) {
-        window.location.href = "pagina_login.html"; // Redireciona para o login se não estiver logado
-    } else {
-        // Exibir o nome do usuário
-        const user = JSON.parse(localStorage.getItem("user"));
-        if (user && user.name) {
-            document.querySelector(".funcionario h3").textContent = user.name;
-        }
-    }
-
-    // Função para deslogar
-    function deslogar() {
-        localStorage.removeItem("token");
-        localStorage.removeItem("user");
-        window.location.href = "pagina_login.html";
-    }
-
-    // Adicionar evento de clique ao botão de deslogar
-    document.querySelector(".deslogar").addEventListener("click", deslogar);
-
-    // Função para carregar as máquinas
-    async function carregarMaquinas() {
-        const listaMaquinas = document.getElementById("listaMaquinas");
-        listaMaquinas.innerHTML = ""; // Limpa antes de carregar
-
-        try {
-            const response = await fetch("http://localhost:3000/items", {
-                headers: {
-                    "Authorization": `Bearer ${localStorage.getItem("token")}`,
-                },
-            });
-
-            if (!response.ok) {
-                throw new Error("Erro ao carregar máquinas.");
+        if (!token) {
+            window.location.href = "pagina_login.html"; // Redireciona para o login se não estiver logado
+        } else {
+            // Exibir o nome do usuário
+            const user = JSON.parse(localStorage.getItem("user"));
+            if (user && user.name) {
+                document.querySelector(".funcionario h3").textContent = user.name;
             }
-
-            const maquinas = await response.json();
-
-            maquinas.forEach((maquina, index) => {
-                const maquinaItem = document.createElement("div");
-                maquinaItem.classList.add("maquina-item");
-                maquinaItem.innerHTML = `
-                    <p><strong>${maquina.nome} | ${maquina.codigo}</strong></p>
-                    <p><strong>Setor</strong> | ${maquina.setor}</p>
-                    <p><strong>Estado</strong> <span id="estado-${maquina.codigo}">${maquina.estado}</span></p>
-                    <button class="remover-btn" onclick="removerMaquina(${maquina.id})">🗑️ Remover</button>
-                `;
-                listaMaquinas.appendChild(maquinaItem);
-            });
-        } catch (error) {
-            console.error("Erro ao carregar máquinas:", error);
-            alert("Erro ao carregar máquinas. Tente novamente.");
         }
-    }
 
-    // Função para remover uma máquina
-    async function removerMaquina(id) {
-        try {
-            const response = await fetch(`http://localhost:3000/items/${id}`, {
-                method: "DELETE",
-                headers: {
-                    "Authorization": `Bearer ${localStorage.getItem("token")}`,
-                },
-            });
-
-            if (!response.ok) {
-                throw new Error("Erro ao remover máquina.");
-            }
-
-            // Recarregar a lista de máquinas
-            carregarMaquinas();
-        } catch (error) {
-            console.error("Erro ao remover máquina:", error);
-            alert("Erro ao remover máquina. Tente novamente.");
+        // Função para deslogar
+        function deslogar() {
+            localStorage.removeItem("token");
+            localStorage.removeItem("user");
+            window.location.href = "pagina_login.html";
         }
-    }
 
-    // Função para ler o arquivo TXT e atualizar o estado das máquinas
-    async function lerMudancasEstado() {
-        try {
-            const response = await fetch("http://localhost:3000/mudancas-estado");
-            if (!response.ok) {
-                throw new Error("Erro ao ler mudanças de estado.");
-            }
+        // Adicionar evento de clique ao botão de deslogar
+        document.querySelector(".deslogar").addEventListener("click", deslogar);
 
-            const texto = await response.text();
-            const linhas = texto.split("\n").filter((linha) => linha.trim() !== "");
+        // Função para carregar as máquinas
+        async function carregarMaquinas() {
+            const listaMaquinas = document.getElementById("listaMaquinas");
+            listaMaquinas.innerHTML = ""; // Limpa antes de carregar
 
-            // Pega a última linha (última mudança de estado)
-            const ultimaLinha = linhas[linhas.length - 1];
-            if (ultimaLinha) {
-                const estado = ultimaLinha.replace("Estado Previsto: ", "").trim();
+            try {
+                const response = await fetch("http://localhost:3000/items", {
+                    headers: {
+                        "Authorization": `Bearer ${localStorage.getItem("token")}`,
+                    },
+                });
 
-                
-                const estadoElement = document.getElementById("estado-codigo_da_maquina");
-                if (estadoElement) {
-                    estadoElement.textContent = estado;
+                if (!response.ok) {
+                    throw new Error("Erro ao carregar máquinas.");
                 }
+
+                const maquinas = await response.json();
+
+                maquinas.forEach((maquina) => {
+                    const maquinaItem = document.createElement("div");
+                    maquinaItem.classList.add("maquina-item");
+                    maquinaItem.innerHTML = `
+                        <p><strong>${maquina.nome} | ${maquina.codigo}</strong></p>
+                        <p><strong>Setor</strong> | ${maquina.setor}</p>
+                        <p><strong>Estado</strong> <span id="estado-${maquina.codigo}">${maquina.estado}</span></p>
+                        <a href="detalhamento_maquina.html?codigo=${maquina.codigo}">
+                            <button class="detalhes-btn">Ver Detalhes</button></a>
+                        <button class="remover-btn" onclick="removerMaquina('${maquina._id}')">Remover</button>
+
+                    `;
+                    listaMaquinas.appendChild(maquinaItem);
+                });
+            } catch (error) {
+                console.error("Erro ao carregar máquinas:", error);
+                alert("Erro ao carregar máquinas. Tente novamente.");
             }
-        } catch (error) {
-            console.error("Erro ao ler mudanças de estado:", error);
         }
-    }
 
-    // Ler o arquivo TXT periodicamente (a cada 5 segundos)
-    setInterval(lerMudancasEstado, 5000);
+        // Função para remover uma máquina
+        async function removerMaquina(id) {
+            try {
+                const response = await fetch(`http://localhost:3000/items/${id}`, {
+                    method: "DELETE",
+                    headers: {
+                        "Authorization": `Bearer ${localStorage.getItem("token")}`,
+                    },
+                });
 
-    // Carregar as máquinas ao abrir a página
-    document.addEventListener("DOMContentLoaded", carregarMaquinas);
-</script>
+                if (!response.ok) {
+                    throw new Error("Erro ao remover máquina.");
+                }
+
+                // Recarregar a lista de máquinas
+                carregarMaquinas();
+            } catch (error) {
+                console.error("Erro ao remover máquina:", error);
+                alert("Erro ao remover máquina. Tente novamente.");
+            }
+        }
+
+        // Função para ler o arquivo TXT e atualizar o estado das máquinas
+        async function lerMudancasEstado() {
+            try {
+                const response = await fetch("http://localhost:3000/mudancas-estado");
+                if (!response.ok) {
+                    throw new Error("Erro ao ler mudanças de estado.");
+                }
+
+                const texto = await response.text();
+                const linhas = texto.split("\n").filter((linha) => linha.trim() !== "");
+
+                // Pega a última linha (última mudança de estado)
+                const ultimaLinha = linhas[linhas.length - 1];
+                if (ultimaLinha) {
+                    const estado = ultimaLinha.replace("Estado Previsto: ", "").trim();
+
+                    // Atualiza o estado de todas as máquinas na lista
+                    const maquinas = document.querySelectorAll(".maquina-item");
+                    maquinas.forEach((maquina) => {
+                        const estadoElement = maquina.querySelector("span");
+                        if (estadoElement) {
+                            estadoElement.textContent = estado;
+                        }
+                    });
+                }
+            } catch (error) {
+                console.error("Erro ao ler mudanças de estado:", error);
+            }
+        }
+
+        // Ler o arquivo TXT periodicamente (a cada 5 segundos)
+        setInterval(lerMudancasEstado, 5000);
+
+        // Carregar as máquinas ao abrir a página
+        document.addEventListener("DOMContentLoaded", carregarMaquinas);
+    </script>
 </body>
 
 </html>
