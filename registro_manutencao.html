@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="css\registro_nanutencao.css">
+    <link rel="stylesheet" href="css/registro_manutencao.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link
@@ -93,7 +93,22 @@
         // Carrega as máquinas ao abrir a página
         document.addEventListener("DOMContentLoaded", async function () {
             try {
-                const response = await fetch("http://localhost:3000/maquinas");
+                // Recupera o token do localStorage
+                const token = localStorage.getItem("token");
+
+                if (!token) {
+                    // Se não houver token, redireciona para a página de login
+                    window.location.href = "login.html";
+                    return;
+                }
+
+                // Faz a requisição com o token no cabeçalho
+                const response = await fetch("http://localhost:3000/maquinas", {
+                    headers: {
+                        "Authorization": `Bearer ${token}` // Envia o token no cabeçalho
+                    }
+                });
+
                 if (!response.ok) {
                     throw new Error("Erro ao carregar máquinas.");
                 }
@@ -127,6 +142,15 @@
         document.getElementById("formRegistro").addEventListener("submit", async function (event) {
             event.preventDefault();
 
+            // Recupera o token do localStorage
+            const token = localStorage.getItem("token");
+
+            if (!token) {
+                // Se não houver token, redireciona para a página de login
+                window.location.href = "login.html";
+                return;
+            }
+
             const maquinaCodigo = document.getElementById("maquina").value;
             const setor = document.getElementById("setor").value;
             const data = document.getElementById("data").value;
@@ -147,7 +171,10 @@
             try {
                 const response = await fetch("http://localhost:3000/registrar-manutencao", {
                     method: "POST",
-                    headers: { "Content-Type": "application/json" },
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": `Bearer ${token}` // Envia o token no cabeçalho
+                    },
                     body: JSON.stringify({
                         maquinaCodigo,
                         setor,

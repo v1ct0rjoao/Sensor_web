@@ -4,8 +4,6 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="css\index.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -19,7 +17,7 @@
     <header>
         <div class="funcionario">
             <img src="img\usuario-do-circulo.png" alt="foto de perfil">
-            <h3></h3>
+            <h3 id="nome_usuario"></h3> <!-- Adicione um ID para facilitar a seleção -->
         </div>
 
         <div class="deslogar">
@@ -86,29 +84,7 @@
     </main>
 
     <script>
-        // Verificar se o usuário está logado
-        const token = localStorage.getItem("token");
-
-        if (!token) {
-            window.location.href = "pagina_login.html"; // Redireciona para o login se não estiver logado
-        } else {
-            // Exibir o nome do usuário
-            const user = JSON.parse(localStorage.getItem("user"));
-            if (user && user.name) {
-                document.querySelector(".funcionario h3").textContent = user.name;
-            }
-        }
-
-        // Função para deslogar
-        function deslogar() {
-            localStorage.removeItem("token");
-            localStorage.removeItem("user");
-            window.location.href = "pagina_login.html";
-        }
-
-        // Adicionar evento de clique ao botão de deslogar
-        document.querySelector(".deslogar").addEventListener("click", deslogar);
-
+        
         // Função para carregar as máquinas
         async function carregarMaquinas() {
             const listaMaquinas = document.getElementById("listaMaquinas");
@@ -126,6 +102,7 @@
                 }
 
                 const maquinas = await response.json();
+                console.log("Máquinas carregadas:", maquinas); // Depuração
 
                 maquinas.forEach((maquina) => {
                     const maquinaItem = document.createElement("div");
@@ -137,7 +114,6 @@
                         <a href="detalhamento_maquina.html?codigo=${maquina.codigo}">
                             <button class="detalhes-btn">Ver Detalhes</button></a>
                         <button class="remover-btn" onclick="removerMaquina('${maquina._id}')">Remover</button>
-
                     `;
                     listaMaquinas.appendChild(maquinaItem);
                 });
@@ -148,7 +124,7 @@
         }
 
         // Função para remover uma máquina
-        async function removerMaquina(id) {
+        window.removerMaquina = async function (id) {
             try {
                 const response = await fetch(`http://localhost:3000/items/${id}`, {
                     method: "DELETE",
@@ -167,43 +143,42 @@
                 console.error("Erro ao remover máquina:", error);
                 alert("Erro ao remover máquina. Tente novamente.");
             }
+        };
+
+    function deslogar() {
+        // Limpa o localStorage (token e informações do usuário)
+        localStorage.removeItem("token");
+        localStorage.removeItem("matricula");
+        localStorage.removeItem("user");
+
+        // Redireciona para a página de login
+        window.location.href = "pagina_login.html";
+    }
+
+    // Adiciona o evento de clique ao botão de deslogar
+    document.querySelector(".deslogar").addEventListener("click", deslogar);
+
+    // Função para carregar o nome do usuário logado
+    function carregarNomeUsuario() {
+        const nomeUsuarioElemento = document.getElementById("nome_usuario");
+
+        // Recupera as informações do usuário do localStorage
+        const user = JSON.parse(localStorage.getItem("user"));
+
+        if (user && user.name) {
+            // Exibe o nome do usuário
+            nomeUsuarioElemento.textContent = user.name;
+        } else {
+            // Caso não haja informações, redireciona para o login
+            window.location.href = "pagina_login.html";
         }
+    }
 
-        // Função para ler o arquivo TXT e atualizar o estado das máquinas
-        async function lerMudancasEstado() {
-            try {
-                const response = await fetch("http://localhost:3000/mudancas-estado");
-                if (!response.ok) {
-                    throw new Error("Erro ao ler mudanças de estado.");
-                }
-
-                const texto = await response.text();
-                const linhas = texto.split("\n").filter((linha) => linha.trim() !== "");
-
-                // Pega a última linha (última mudança de estado)
-                const ultimaLinha = linhas[linhas.length - 1];
-                if (ultimaLinha) {
-                    const estado = ultimaLinha.replace("Estado Previsto: ", "").trim();
-
-                    // Atualiza o estado de todas as máquinas na lista
-                    const maquinas = document.querySelectorAll(".maquina-item");
-                    maquinas.forEach((maquina) => {
-                        const estadoElement = maquina.querySelector("span");
-                        if (estadoElement) {
-                            estadoElement.textContent = estado;
-                        }
-                    });
-                }
-            } catch (error) {
-                console.error("Erro ao ler mudanças de estado:", error);
-            }
-        }
-
-        // Ler o arquivo TXT periodicamente (a cada 5 segundos)
-        setInterval(lerMudancasEstado, 5000);
+    // Carrega o nome do usuário ao abrir a página
+    carregarNomeUsuario();
 
         // Carregar as máquinas ao abrir a página
-        document.addEventListener("DOMContentLoaded", carregarMaquinas);
+        carregarMaquinas();
     </script>
 </body>
 

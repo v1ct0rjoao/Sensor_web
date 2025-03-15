@@ -58,7 +58,6 @@
             return;
         }
     
-        // Exibir feedback visual
         const botaoEntrar = document.getElementById("botao_de_entrar");
         botaoEntrar.disabled = true;
         botaoEntrar.textContent = "Carregando...";
@@ -73,9 +72,10 @@
             const data = await response.json();
     
             if (response.ok) {
-                // Salvar token e nome do usuário no localStorage
-                localStorage.setItem("token", "token_simulado"); // Substitua pelo token real da API
-                localStorage.setItem("user", JSON.stringify({ name: data.user.name }));
+                // Salvar token, matrícula e nome do usuário no localStorage
+                localStorage.setItem("token", data.token);
+                localStorage.setItem("matricula", matricula);
+                localStorage.setItem("user", JSON.stringify(data.user)); // Salva o objeto user com o nome
     
                 // Redirecionar para a página index.html
                 window.location.href = "index.html";
@@ -83,9 +83,9 @@
                 alert(data.error || "Matrícula ou senha incorretos.");
             }
         } catch (error) {
+            console.error("Erro ao fazer login:", error);
             alert("Erro ao fazer login. Tente novamente.");
         } finally {
-            // Restaurar o botão
             botaoEntrar.disabled = false;
             botaoEntrar.textContent = "ENTRAR";
         }

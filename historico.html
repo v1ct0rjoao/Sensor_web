@@ -32,22 +32,36 @@
     </main>
 
     <script>
-        // Função para carregar a lista de máquinas
         async function carregarMaquinas() {
             try {
-                const response = await fetch("http://localhost:3000/items");
+                // Recupera o token do localStorage
+                const token = localStorage.getItem("token");
+        
+                if (!token) {
+                    // Se não houver token, redireciona para a página de login
+                    window.location.href = "login.html";
+                    return;
+                }
+        
+                // Faz a requisição com o token no cabeçalho
+                const response = await fetch("http://localhost:3000/items", {
+                    headers: {
+                        "Authorization": `Bearer ${token}` // Envia o token no cabeçalho
+                    }
+                });
+        
                 if (!response.ok) {
                     throw new Error("Erro ao carregar as máquinas.");
                 }
-
+        
                 const maquinas = await response.json();
                 const historicoContainer = document.getElementById("historicoContainer");
-
+        
                 if (maquinas.length === 0) {
                     historicoContainer.innerHTML = "<p>Nenhuma máquina cadastrada.</p>";
                     return;
                 }
-
+        
                 // Cria os itens de máquina
                 historicoContainer.innerHTML = maquinas.map((maquina) => `
                     <a href="historico_maquina.html?codigo=${maquina.codigo}" class="maquina-item">
@@ -62,10 +76,10 @@
                 document.getElementById("historicoContainer").innerHTML = "<p>Erro ao carregar as máquinas.</p>";
             }
         }
-
+        
         // Carrega as máquinas ao abrir a página
         document.addEventListener("DOMContentLoaded", carregarMaquinas);
-
+        
         // Redireciona para index.html ao clicar na div
         document.getElementById("voltarParaIndex").addEventListener("click", function () {
             window.location.href = "index.html";

@@ -1,9 +1,10 @@
 const express = require("express");
 const cors = require("cors");
 const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
 const WebSocket = require("ws");
 const fs = require("fs");
-const path = require("path"); // Adicionado para trabalhar com caminhos relativos
+const path = require("path");
 const mongoose = require("mongoose");
 
 const app = express();
@@ -55,7 +56,8 @@ const maquinaSchema = new mongoose.Schema({
     historicoEstados: [{
         estado: String,
         data: String
-    }]
+    }],
+    usuarioMatricula: String // Campo para associar a máquina ao usuário
 });
 
 const Maquina = mongoose.model("Maquina", maquinaSchema);
@@ -66,10 +68,7 @@ const agendamentoSchema = new mongoose.Schema({
     maquinaNome: String,
     data: String,
     descricao: String,
-    usuario: {
-        name: String,
-        matricula: String
-    }
+    usuarioMatricula: String // Campo para associar o agendamento ao usuário
 });
 
 const Agendamento = mongoose.model("Agendamento", agendamentoSchema);
@@ -94,8 +93,26 @@ function notificarMudancaEstado(codigo, estado) {
     });
 }
 
-// Rota para registrar manutenção
-app.post("/registrar-manutencao", async (req, res) => {
+// Middleware para verificar o token JWT
+function autenticarToken(req, res, next) {
+    const authHeader = req.headers["authorization"];
+    const token = authHeader && authHeader.split(" ")[1]; // Formato: "Bearer TOKEN"
+
+    if (!token) {
+        return res.status(401).json({ error: "Token de autenticação não fornecido." });
+    }
+
+    jwt.verify(token, "sua_chave_secreta", (err, user) => {
+        if (err) {
+            return res.status(403).json({ error: "Token inválido ou expirado." });
+        }
+        req.user = user; // Adiciona o usuário decodificado à requisição
+        next(); // Passa para a próxima função (rota)
+    });
+}
+
+// Rota para registrar manutenção (protegida)
+app.post("/registrar-manutencao", autenticarToken, async (req, res) => {
     const { maquinaCodigo, setor, data, status, tecnico, tipo, horas, pecas, custo, descricao, observacoes } = req.body;
 
     if (!maquinaCodigo || !data || !status || !tecnico || !tipo || !horas || !custo || !descricao) {
@@ -125,8 +142,8 @@ app.post("/registrar-manutencao", async (req, res) => {
     }
 });
 
-// Rota para agendar manutenção
-app.post("/agendar", async (req, res) => {
+// Rota para agendar manutenção (protegida)
+app.post("/agendar", autenticarToken, async (req, res) => {
     const { maquinaCodigo, data, descricao } = req.body;
 
     if (!maquinaCodigo || !data || !descricao) {
@@ -144,6 +161,7 @@ app.post("/agendar", async (req, res) => {
             maquinaNome: maquina.nome,
             data,
             descricao,
+            usuarioMatricula: req.user.matricula // Associar ao usuário logado
         });
 
         await novoAgendamento.save();
@@ -154,8 +172,8 @@ app.post("/agendar", async (req, res) => {
     }
 });
 
-// Rota para listar usuários
-app.get("/users", async (req, res) => {
+// Rota para listar usuários (protegida)
+app.get("/users", autenticarToken, async (req, res) => {
     try {
         const users = await User.find({}, { senha: 0 }); // Exclui a senha do resultado
         res.json(users);
@@ -164,7 +182,7 @@ app.get("/users", async (req, res) => {
     }
 });
 
-// Rota para registrar um novo usuário
+// Rota para registrar um novo usuário (pública)
 app.post("/register", async (req, res) => {
     const { name, matricula, senha } = req.body;
 
@@ -188,7 +206,7 @@ app.post("/register", async (req, res) => {
     }
 });
 
-// Rota para login
+// Rota para login (pública)
 app.post("/login", async (req, res) => {
     const { matricula, senha } = req.body;
 
@@ -198,43 +216,51 @@ app.post("/login", async (req, res) => {
 
     try {
         const user = await User.findOne({ matricula });
+
         if (!user) {
             return res.status(401).json({ error: "Matrícula ou senha incorretos!" });
         }
 
         const senhaValida = await bcrypt.compare(senha, user.senha);
+
         if (!senhaValida) {
             return res.status(401).json({ error: "Matrícula ou senha incorretos!" });
         }
 
-        res.json({ message: "Login bem-sucedido!", user: { name: user.name } });
+        // Gera um token JWT (apenas com a matrícula)
+        const token = jwt.sign({ matricula: user.matricula }, "sua_chave_secreta", {
+            expiresIn: "1h", // Token expira em 1 hora
+        });
+
+        // Retorna o token e o nome do usuário
+        res.json({ message: "Login bem-sucedido!", token, user: { name: user.name } });
     } catch (error) {
+        console.error("Erro ao fazer login:", error);
         res.status(500).json({ error: "Erro ao fazer login." });
     }
 });
-
-// Rota para listar máquinas
-app.get("/items", async (req, res) => {
+// Rota para listar máquinas (protegida)
+app.get("/items", autenticarToken, async (req, res) => {
     try {
-        const maquinas = await Maquina.find();
+        const maquinas = await Maquina.find({ usuarioMatricula: req.user.matricula }); // Filtra por usuário
         res.json(maquinas);
     } catch (error) {
         res.status(500).json({ error: "Erro ao buscar máquinas." });
     }
 });
 
-// Rota para listar máquinas (apenas nome e código)
-app.get("/maquinas", async (req, res) => {
+// Rota para listar máquinas (apenas nome e código, protegida)
+app.get("/maquinas", autenticarToken, async (req, res) => {
     try {
-        const maquinas = await Maquina.find({}, { nome: 1, codigo: 1 }); // Apenas nome e código
+        const maquinas = await Maquina.find({ usuarioMatricula: req.user.matricula }, { nome: 1, codigo: 1 }); // Filtra por usuário
         res.json(maquinas);
     } catch (error) {
         res.status(500).json({ error: "Erro ao buscar máquinas." });
     }
 });
 
-// Rota para adicionar uma nova máquina
-app.post("/items", async (req, res) => {
+// Rota para adicionar uma nova máquina (protegida)
+app.post("/items", autenticarToken, async (req, res) => {
     const { nome, codigo, setor, fabricante, serie, data, potencia } = req.body;
 
     if (!nome || !codigo || !setor || !fabricante || !serie || !data || !potencia) {
@@ -251,7 +277,8 @@ app.post("/items", async (req, res) => {
             data,
             potencia,
             estado: "Em operação", // Estado inicial
-            historicoEstados: [{ estado: "Em operação", data: new Date().toLocaleString() }] // Histórico inicial
+            historicoEstados: [{ estado: "Em operação", data: new Date().toLocaleString() }], // Histórico inicial
+            usuarioMatricula: req.user.matricula // Associar ao usuário logado
         });
 
         await novaMaquina.save();
@@ -265,8 +292,8 @@ app.post("/items", async (req, res) => {
     }
 });
 
-// Rota para remover uma máquina
-app.delete("/items/:id", async (req, res) => {
+// Rota para remover uma máquina (protegida)
+app.delete("/items/:id", autenticarToken, async (req, res) => {
     try {
         await Maquina.findByIdAndDelete(req.params.id);
         res.json({ message: "Máquina removida com sucesso." });
@@ -275,10 +302,10 @@ app.delete("/items/:id", async (req, res) => {
     }
 });
 
-// Rota para obter o histórico de uma máquina específica
-app.get("/items/:codigo/historico", async (req, res) => {
+// Rota para obter o histórico de uma máquina específica (protegida)
+app.get("/items/:codigo/historico", autenticarToken, async (req, res) => {
     try {
-        const maquina = await Maquina.findOne({ codigo: req.params.codigo });
+        const maquina = await Maquina.findOne({ codigo: req.params.codigo, usuarioMatricula: req.user.matricula }); // Filtra por usuário
         if (!maquina) {
             return res.status(404).json({ error: "Máquina não encontrada." });
         }
@@ -288,10 +315,10 @@ app.get("/items/:codigo/historico", async (req, res) => {
     }
 });
 
-// Rota para buscar detalhes de uma máquina pelo código
-app.get("/items/:codigo", async (req, res) => {
+// Rota para buscar detalhes de uma máquina pelo código (protegida)
+app.get("/items/:codigo", autenticarToken, async (req, res) => {
     try {
-        const maquina = await Maquina.findOne({ codigo: req.params.codigo });
+        const maquina = await Maquina.findOne({ codigo: req.params.codigo, usuarioMatricula: req.user.matricula }); // Filtra por usuário
         if (!maquina) {
             return res.status(404).json({ error: "Máquina não encontrada." });
         }
@@ -301,18 +328,18 @@ app.get("/items/:codigo", async (req, res) => {
     }
 });
 
-// Rota para listar agendamentos
-app.get("/agendamentos", async (req, res) => {
+// Rota para listar agendamentos (protegida)
+app.get("/agendamentos", autenticarToken, async (req, res) => {
     try {
-        const agendamentos = await Agendamento.find();
+        const agendamentos = await Agendamento.find({ usuarioMatricula: req.user.matricula }); // Filtra por usuário
         res.json(agendamentos);
     } catch (error) {
         res.status(500).json({ error: "Erro ao buscar agendamentos." });
     }
 });
 
-// Rota para remover um agendamento
-app.delete("/agendamentos/:id", async (req, res) => {
+// Rota para remover um agendamento (protegida)
+app.delete("/agendamentos/:id", autenticarToken, async (req, res) => {
     try {
         await Agendamento.findByIdAndDelete(req.params.id);
         res.json({ message: "Agendamento removido com sucesso." });
@@ -321,7 +348,7 @@ app.delete("/agendamentos/:id", async (req, res) => {
     }
 });
 
-// Rota para servir o arquivo TXT
+// Rota para servir o arquivo TXT (pública)
 app.get("/mudancas-estado", (req, res) => {
     const caminhoArquivo = path.join(__dirname, "mudancas_estado.txt"); // Caminho relativo
 

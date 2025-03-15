@@ -15,7 +15,6 @@
 
 <body>
     <header>
-     
         <div class="deslogar" id="voltarParaIndex">
             <h3>Voltar</h3>
             <img src="img/voltar.png" alt="voltar">
@@ -51,10 +50,25 @@
             window.location.href = "index.html";
         });
 
-        // Função para carregar as máquinas
+        // Função para carregar as máquinas do usuário logado
         async function carregarMaquinas() {
             try {
-                const response = await fetch("http://localhost:3000/maquinas");
+                // Recupera o token do localStorage
+                const token = localStorage.getItem("token");
+
+                if (!token) {
+                    // Se não houver token, redireciona para a página de login
+                    window.location.href = "login.html";
+                    return;
+                }
+
+                // Faz a requisição com o token no cabeçalho
+                const response = await fetch("http://localhost:3000/maquinas", {
+                    headers: {
+                        "Authorization": `Bearer ${token}` // Envia o token no cabeçalho
+                    }
+                });
+
                 if (!response.ok) {
                     throw new Error("Erro ao carregar máquinas.");
                 }
@@ -62,6 +76,10 @@
                 const maquinas = await response.json();
                 const selectMaquina = document.getElementById("maquina");
 
+                // Limpa as opções existentes
+                selectMaquina.innerHTML = '<option value="">Selecione uma máquina</option>';
+
+                // Adiciona as máquinas ao select
                 maquinas.forEach((maquina) => {
                     const option = document.createElement("option");
                     option.value = maquina.codigo;
@@ -74,29 +92,43 @@
             }
         }
 
+        // Função para agendar manutenção
         document.getElementById("formAgendar").addEventListener("submit", async function (event) {
             event.preventDefault();
-        
+
             const maquinaCodigo = document.getElementById("maquina").value;
             const data = document.getElementById("data").value;
             const descricao = document.getElementById("descricao").value;
-        
+
             if (!maquinaCodigo || !data || !descricao) {
                 alert("Por favor, preencha todos os campos.");
                 return;
             }
-        
+
             try {
+                // Recupera o token do localStorage
+                const token = localStorage.getItem("token");
+
+                if (!token) {
+                    // Se não houver token, redireciona para a página de login
+                    window.location.href = "login.html";
+                    return;
+                }
+
+                // Faz a requisição com o token no cabeçalho
                 const response = await fetch("http://localhost:3000/agendar", {
                     method: "POST",
-                    headers: { "Content-Type": "application/json" },
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": `Bearer ${token}` // Envia o token no cabeçalho
+                    },
                     body: JSON.stringify({ maquinaCodigo, data, descricao }),
                 });
-        
+
                 if (!response.ok) {
                     throw new Error("Erro ao agendar manutenção.");
                 }
-        
+
                 alert("Manutenção agendada com sucesso!");
                 window.location.href = "index.html";
             } catch (error) {
@@ -104,6 +136,7 @@
                 alert("Erro ao agendar manutenção. Tente novamente.");
             }
         });
+
         // Carregar as máquinas ao abrir a página
         document.addEventListener("DOMContentLoaded", carregarMaquinas);
     </script>
