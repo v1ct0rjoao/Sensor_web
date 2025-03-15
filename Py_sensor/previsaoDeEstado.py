@@ -4,8 +4,6 @@ import numpy as np
 import joblib
 import os
 import time
-import requests
-
 
 # 1. Carregar o modelo treinado, o LabelEncoder e o modelo de detecção de anomalias
 caminho_modelos = os.path.join(os.path.dirname(__file__), "modelos")
@@ -83,28 +81,7 @@ def extrair_features(dados):
         np.percentile(dados, 75),  # Terceiro quartil
     ])
 
-# 6. Função para enviar dados ao servidor Node.js
-def enviar_dados_para_nodejs(estado, anomalia=False):
-    """
-    Envia os dados de estado e anomalia para o servidor Node.js via API REST.
-    """
-    url = "http://localhost:3000/inserir-dados"  # URL da rota do servidor Node.js
-    dados = {
-        "timestamp": time.strftime("%Y-%m-%d %H:%M:%S"),
-        "estado": estado,
-        "anomalia": anomalia
-    }
-
-    try:
-        response = requests.post(url, json=dados)
-        if response.status_code == 201:
-            print("Dados enviados com sucesso!")
-        else:
-            print(f"Erro ao enviar dados: {response.status_code} - {response.text}")
-    except Exception as e:
-        print(f"Erro ao conectar ao servidor Node.js: {e}")
-
-# 7. Função para prever o estado em tempo real e detectar anomalias
+# 6. Função para prever o estado em tempo real e detectar anomalias
 def prever_estado_tempo_real():
     print("Iniciando previsão em tempo real...")
     print("Pressione Ctrl+C para parar.")
@@ -112,65 +89,74 @@ def prever_estado_tempo_real():
     # Variável para armazenar o último estado registrado
     ultimo_estado = None
 
-    try:
-        # Buffer para armazenar as últimas 200 amostras
-        buffer = []
+    # Caminho para salvar as mudanças de estado dentro da pasta Py_sensor
+    caminho_mudancas = os.path.join(os.path.dirname(__file__), "mudancas_estado.txt")
 
-        while True:
-            # Lê uma linha da porta serial
-            line = ser.readline().decode('utf-8').strip()
+    # Abrir arquivo para armazenar as mudanças de estado
+    with open(caminho_mudancas, 'w') as arquivo:
+        arquivo.write("Estado de Maquina:\n")  # Cabeçalho do arquivo
 
-            # Verifica se a linha contém um valor numérico
-            if line.replace(".", "").isdigit():  # Verifica se é um número válido
-                try:
-                    magnitude = float(line)  # Converte para float
+        try:
+            # Buffer para armazenar as últimas 200 amostras
+            buffer = []
 
-                    # Adiciona a magnitude ao buffer
-                    buffer.append(magnitude)
+            while True:
+                # Lê uma linha da porta serial
+                line = ser.readline().decode('utf-8').strip()
 
-                    # Quando o buffer tiver 200 amostras, faz a previsão
-                    if len(buffer) == 200:
-                        # Extrai as características das 200 amostras
-                        features = extrair_features(np.array(buffer))
+                # Verifica se a linha contém um valor numérico
+                if line.replace(".", "").isdigit():  # Verifica se é um número válido
+                    try:
+                        magnitude = float(line)  # Converte para float
 
-                        # Fazer a previsão do estado
-                        estado_codificado = modelo.predict([features])[0]  # Estado codificado (número)
-                        estado_nome = label_encoder.inverse_transform([estado_codificado])[0]  # Mapeia para o nome descritivo
+                        # Adiciona a magnitude ao buffer
+                        buffer.append(magnitude)
 
-                        # Verificar se é uma anomalia
-                        anomalia = ocsvm.predict([features])[0]  # -1 para anomalia, 1 para normal
+                        # Quando o buffer tiver 200 amostras, faz a previsão
+                        if len(buffer) == 200:
+                            # Extrai as características das 200 amostras
+                            features = extrair_features(np.array(buffer))
 
-                        # Verifica se houve mudança de estado
-                        if estado_nome != ultimo_estado:
-                            # Atualiza o último estado registrado
-                            ultimo_estado = estado_nome
+                            # Fazer a previsão do estado
+                            estado_codificado = modelo.predict([features])[0]  # Estado codificado (número)
+                            estado_nome = label_encoder.inverse_transform([estado_codificado])[0]  # Mapeia para o nome descritivo
 
-                            # Exibe o estado previsto no terminal
-                            print(f"Estado Previsto: {estado_nome}")
+                            # Verificar se é uma anomalia
+                            anomalia = ocsvm.predict([features])[0]  # -1 para anomalia, 1 para normal
 
-                            # Envia o estado previsto para o servidor Node.js
-                            enviar_dados_para_nodejs(estado_nome)
+                            # Verifica se houve mudança de estado
+                            if estado_nome != ultimo_estado:
+                                # Atualiza o último estado registrado
+                                ultimo_estado = estado_nome
 
-                        # Verifica se é uma anomalia
-                        if anomalia == -1:
-                            # Exibe a anomalia no terminal
-                            print("Anomalia Detectada!")
+                                # Exibe o estado previsto no terminal
+                                print(f"Estado Previsto: {estado_nome}")
 
-                            # Envia a anomalia para o servidor Node.js
-                            enviar_dados_para_nodejs(estado_nome, anomalia=True)
+                                # Armazena o estado previsto no arquivo
+                                arquivo.write(f"Estado Previsto: {estado_nome}\n")
+                                arquivo.flush()  # Força a gravação no arquivo
 
-                        # Limpa o buffer para coletar novas amostras
-                        buffer = []
+                            # Verifica se é uma anomalia
+                            if anomalia == -1:
+                                # Exibe a anomalia no terminal
+                                print("Anomalia Detectada!")
 
-                except ValueError:
-                    print(f"Erro ao converter valor: {line}")
-            else:
-                print(f"Formato inesperado: {line}")
+                                # Armazena a anomalia no arquivo
+                                arquivo.write("Anomalia Detectada!\n")
+                                arquivo.flush()  # Força a gravação no arquivo
 
-    except KeyboardInterrupt:
-        print("Previsão em tempo real interrompida.")
-    finally:
-        ser.close()
+                            # Limpa o buffer para coletar novas amostras
+                            buffer = []
 
-# 8. Iniciar a previsão em tempo real
+                    except ValueError:
+                        print(f"Erro ao converter valor: {line}")
+                else:
+                    print(f"Formato inesperado: {line}")
+
+        except KeyboardInterrupt:
+            print("Previsão em tempo real interrompida.")
+        finally:
+            ser.close()
+
+# 7. Iniciar a previsão em tempo real
 prever_estado_tempo_real()

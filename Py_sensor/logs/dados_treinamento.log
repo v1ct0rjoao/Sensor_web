@@ -1,0 +1,30 @@
+2025-03-15 12:10:30,194 - Iniciando o processo de treinamento.
+2025-03-15 12:10:32,181 - Arquivo repouso.csv carregado com condição repouso.
+2025-03-15 12:10:32,185 - Arquivo velocidade 1.csv carregado com condição velocidade 1.
+2025-03-15 12:10:32,188 - Arquivo velocidade 2.csv carregado com condição velocidade 2.
+2025-03-15 12:10:32,191 - Arquivo velocidade 3.csv carregado com condição velocidade 3.
+2025-03-15 12:10:32,191 - Total de amostras carregadas: 19982
+2025-03-15 12:10:32,312 - Total de janelas de 100 amostras: 200
+2025-03-15 12:10:32,315 - Tamanho do conjunto de treino: 140
+2025-03-15 12:10:32,315 - Tamanho do conjunto de teste: 60
+2025-03-15 12:11:57,569 - Melhores hiperparâmetros: {'max_depth': 10, 'min_samples_split': 10, 'n_estimators': 200}
+2025-03-15 12:11:57,600 - Acurácia: 0.8333333333333334
+2025-03-15 12:11:57,610 - Relatório de Classificação:
+              precision    recall  f1-score   support
+
+     repouso       0.85      1.00      0.92        11
+velocidade 1       1.00      0.95      0.97        20
+velocidade 2       0.71      0.80      0.75        15
+velocidade 3       0.73      0.57      0.64        14
+
+    accuracy                           0.83        60
+   macro avg       0.82      0.83      0.82        60
+weighted avg       0.83      0.83      0.83        60
+
+2025-03-15 12:11:57,613 - Matriz de Confusão:
+[[11  0  0  0]
+ [ 0 19  1  0]
+ [ 0  0 12  3]
+ [ 2  0  4  8]]
+2025-03-15 12:11:57,708 - Modelo, scaler e label_encoder salvos na pasta 'C:\Users\joaov\Documents\Programação\Projeto_Piec\Py_sensor\modelos'.
+2025-03-15 12:11:57,718 - Métricas e hiperparâmetros salvos na pasta 'C:\Users\joaov\Documents\Programação\Projeto_Piec\Py_sensor\modelos'.

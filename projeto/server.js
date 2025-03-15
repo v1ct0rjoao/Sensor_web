@@ -3,7 +3,7 @@ const cors = require("cors");
 const bcrypt = require("bcrypt");
 const WebSocket = require("ws");
 const fs = require("fs");
-const path = require("path");
+const path = require("path"); // Adicionado para trabalhar com caminhos relativos
 const mongoose = require("mongoose");
 
 const app = express();
@@ -93,43 +93,6 @@ function notificarMudancaEstado(codigo, estado) {
         }
     });
 }
-
-// Rota para receber dados do Python e inserir no MongoDB
-app.post("/inserir-dados", async (req, res) => {
-    const { timestamp, estado, anomalia } = req.body;
-
-    if (!timestamp || !estado) {
-        return res.status(400).json({ error: "Campos obrigatórios faltando!" });
-    }
-
-    try {
-        // Cria um documento para inserir no MongoDB
-        const documento = {
-            timestamp,
-            estado,
-            anomalia: anomalia || false // Se não for fornecido, assume false
-        };
-
-        // Insere o documento na coleção de mudanças de estado
-        await colecao.insertOne(documento);
-
-        // Atualiza o estado de todas as máquinas
-        const maquinas = await Maquina.find();
-        for (const maquina of maquinas) {
-            if (maquina.estado !== estado) {
-                maquina.estado = estado;
-                maquina.historicoEstados.push({ estado, data: timestamp });
-                await maquina.save();
-                notificarMudancaEstado(maquina.codigo, estado);
-            }
-        }
-
-        res.status(201).json({ message: "Dados inseridos com sucesso!" });
-    } catch (error) {
-        console.error("Erro ao inserir dados:", error);
-        res.status(500).json({ error: "Erro ao inserir dados no MongoDB." });
-    }
-});
 
 // Rota para registrar manutenção
 app.post("/registrar-manutencao", async (req, res) => {
