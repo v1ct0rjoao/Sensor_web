@@ -46,7 +46,26 @@
             }
 
             try {
-                const response = await fetch(`http://localhost:3000/items/${codigo}`);
+                const token = localStorage.getItem('token'); // Recupera o token do localStorage
+                if (!token) {
+                    alert("Token de autenticação não encontrado. Faça login novamente.");
+                    window.location.href = "login.html"; // Redireciona para a página de login
+                    return;
+                }
+
+                const response = await fetch(`http://localhost:3000/items/${codigo}`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}` // Inclui o token no cabeçalho
+                    }
+                });
+
+                if (response.status === 403) {
+                    alert("Sessão expirada. Faça login novamente.");
+                    localStorage.removeItem('token'); // Remove o token expirado
+                    window.location.href = "login.html"; // Redireciona para a página de login
+                    return;
+                }
+
                 if (!response.ok) {
                     throw new Error("Erro ao buscar detalhes da máquina.");
                 }
@@ -130,8 +149,14 @@
 
         // Carregar os detalhes da máquina e inicializar o gráfico ao abrir a página
         document.addEventListener("DOMContentLoaded", () => {
-            carregarDetalhesMaquina();
-            inicializarGrafico();
+            const token = localStorage.getItem('token');
+            if (!token) {
+                alert("Token de autenticação não encontrado. Faça login novamente.");
+                window.location.href = "login.html"; // Redireciona para a página de login
+            } else {
+                carregarDetalhesMaquina();
+                inicializarGrafico();
+            }
         });
     </script>
 </body>

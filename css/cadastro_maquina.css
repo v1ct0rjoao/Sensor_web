@@ -119,8 +119,8 @@ header {
 
 /* Botão de Cadastrar */
 #botaoCadastrarMaquina {
-  padding: 12px 16px;
-  font-size: 1rem;
+  padding: 8px 16px;
+  font-size: 0.9rem;
   font-family: 'Poppins', sans-serif;
   font-weight: 700;
   border: none;
@@ -129,7 +129,8 @@ header {
   color: white;
   cursor: pointer;
   margin-top: 20px;
-  width: 100%;
+  width: auto;
+  max-width: 150px;
   transition: background-color 0.3s ease, transform 0.2s ease;
 }
 
@@ -139,6 +140,30 @@ header {
 }
 
 #botaoCadastrarMaquina:active {
+  transform: translateY(0);
+}
+
+/* Estilo do botão "Atualizar Portas" */
+#atualizarPortas {
+  padding: 8px 16px;
+  font-size: 0.9rem;
+  font-family: 'Poppins', sans-serif;
+  font-weight: 600;
+  border: none;
+  border-radius: 8px;
+  background-color: #02418A;
+  color: white;
+  cursor: pointer;
+  margin-top: 10px;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+#atualizarPortas:hover {
+  background-color: #0630a8;
+  transform: translateY(-2px);
+}
+
+#atualizarPortas:active {
   transform: translateY(0);
 }
 
@@ -166,7 +191,8 @@ header {
   }
 
   #botaoCadastrarMaquina {
-      padding: 10px 14px;
-      font-size: 0.9rem;
+      padding: 8px 14px;
+      font-size: 0.8rem;
+      max-width: 120px;
   }
 }
